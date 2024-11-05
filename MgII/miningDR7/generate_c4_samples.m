@@ -1,3 +1,4 @@
+
 % generate_civ_samples: generates CIV parameter samples from training
 % catalog
 
@@ -6,8 +7,8 @@
 
 
 
-c4_catalog = load(sprintf('%s/c4_catalog', c4_catalog_directory('Cooksey_C4_cat')));
-c4_catalog =c4_catalog(c4_catalog(:,3)>0,:); % removing some null column densities
+c4_catalog = load('/home/igm2024/IGM-Mining-MgII/MgII/miningDR7/data/C4_catalogs/Cooksey_C4_cat/processed/CIV-cat.mat');
+%c4_catalog = c4_catalog(c4_catalog(:,3)>0,:); % removing some null column densities
 % training_set_name = 'UVES';
 
 % c4_catalog = load(sprintf('%s/c4_catalog', c4_catalog_directory(training_set_name)));
@@ -32,7 +33,7 @@ u = makedist('uniform', ...
              'upper', uniform_max_log_nciv);
 
 % extract observed log₁₀ N_CIV samples directly from CIV catalog
-log_nciv = c4_catalog(:, 3);
+log_nciv = c4_catalog.NCIV;
 % log_nciv = c4_catalog{6};
 
 % make a quadratic fit to the estimated log p(log₁₀ N_CIV) over the
@@ -96,14 +97,15 @@ padded_wavelengths = ...
              max_lambda + width*Lpixel_spacing, ...
              width)' ];
 
-for nc=1:num_C4_samples
-     absorptionL1_fine_1548= voigt0(padded_wavelengths, 2, nciv_samples(nc),...
-                                    1,  sigma_civ_samples(nc));
-     W_r_1548_samples(nc) = trapz(wavelengths, 1-absorptionL1_fine_1548); 
-     absorptionL1_fine_1550= voigt1(padded_wavelengths, 2, nciv_samples(nc),...
-     1,  sigma_civ_samples(nc));
-     W_r_1550_samples(nc) = trapz(wavelengths, 1-absorptionL1_fine_1550);
-end
+
+% for nc=1:num_C4_samples
+%      absorptionL1_fine_1548= voigt0(padded_wavelengths, 2, nciv_samples(nc),...
+%                                     1,  sigma_civ_samples(nc));
+%      W_r_1548_samples(nc) = trapz(wavelengths, 1-absorptionL1_fine_1548); 
+%      absorptionL1_fine_1550= voigt1(padded_wavelengths, 2, nciv_samples(nc),...
+%      1,  sigma_civ_samples(nc));
+%      W_r_1550_samples(nc) = trapz(wavelengths, 1-absorptionL1_fine_1550);
+% end
 
 variables_to_save = {'offset_z_samples', 'offset_sigma_samples', 'log_nciv_samples', 'nciv_samples',...
                      'W_r_1548_samples', 'W_r_1550_samples'};

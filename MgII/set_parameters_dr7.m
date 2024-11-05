@@ -40,7 +40,7 @@ loading_max_lambda = 2850;
 
 % preprocessing parameters
 %z_qso_cut      = 2.15;                   % filter out QSOs with z less than this threshold
-z_qso_cut      = 1.5;                      % according to Seyffert z>0.36                      
+z_qso_cut      = .36;                      % according to Seyffert z>0.36                      
 min_num_pixels = 100;                         % minimum number of non-masked pixels
 
 % normalization parameters
