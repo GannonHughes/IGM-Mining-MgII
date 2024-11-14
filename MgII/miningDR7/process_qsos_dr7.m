@@ -29,7 +29,7 @@ end
 % My prior_ind here is already those OK sight of lines that have CIV
 prior.z_qsos  = Full_catalog.all_zqso(prior_ind);
 prior.c4_ind = prior_ind;
-prior.z_c4 = Full_catalog.all_z_civ3(prior_ind);
+prior.z_c4 = Full_catalog.all_z_MgII3(prior_ind);
 
 % filter out CIVs from prior catalog corresponding to region of spectrum below
 % Ly-alpha QSO rest. In Roman's code, for detecting DLAs, instead of
@@ -53,7 +53,7 @@ all_noise_variance = all_noise_variance(test_ind);
 all_pixel_mask     =     all_pixel_mask(test_ind);
 all_sigma_pixel    =    all_sigma_pixel(test_ind);
 z_qsos             =           all_zqso(test_ind);
-num_quasars        =                numel(z_qsos);
+num_quasars        =                100%numel(z_qsos);
 REW_PM             =          all_EW1(test_ind,:);
 errREW_PM             =       all_errEW1(test_ind,:);
 
@@ -96,11 +96,11 @@ ID = all_QSO_ID(test_ind);
 % plt_count=0;
 % FN_IDs = importdata('FN-list.csv');
 % in_Kathy_FN_list = ismember(ID, FN_IDs);
-N_civ_test = all_N_civ(test_ind,:);
-z_PM_test = all_z_civ1(test_ind,:);
-z_PM_prior = all_z_civ1(prior_ind,:);
+N_civ_test = all_N_MgII(test_ind,:);
+z_PM_test = all_z_MgII1(test_ind,:);
+z_PM_prior = all_z_MgII1(prior_ind,:);
 j0=0;
-for quasar_ind = 1:300
+for quasar_ind = 1:100
 
     tic;
     z_qso = z_qsos(quasar_ind);
@@ -121,7 +121,7 @@ for quasar_ind = 1:300
     % convert to QSO rest frame
     this_rest_wavelengths = emitted_wavelengths(this_wavelengths, z_qso);
 
-    unmasked_ind = (this_rest_wavelengths >= min_lambda) & ...
+    unmasked_ind = (this_rest_wavelengths >= min_lambda) & ...            % unmasked in is an array of all 0's
         (this_rest_wavelengths <= max_lambda);% & (this_sigma_pixel>0);
     % keep complete copy of equally spaced wavelengths for absorption
 % %     % computation
@@ -155,10 +155,10 @@ for quasar_ind = 1:300
 
     fprintf('\n');
     for i = 1:max_civ
-        fprintf(' ...     p(%i  CIVs | z_QSO)       : %0.3f\n', i, this_p_c4(i));
+        fprintf(' ...     p(%i  MgIIs | z_QSO)       : %0.3f\n', i, this_p_c4(i));
             log_priors_no_c4(quasar_ind, i) = ...
                 log(1 - this_p_c4(i));
-        fprintf(' ...     p(no CIV  | z_QSO)       : %0.3f\n', exp(log_priors_no_c4(quasar_ind, i)) );
+        fprintf(' ...     p(no MgII  | z_QSO)       : %0.3f\n', exp(log_priors_no_c4(quasar_ind, i)) );
     end
 
     log_priors_c4(quasar_ind,:) = log(this_p_c4(:));
@@ -222,7 +222,7 @@ for quasar_ind = 1:300
 
 
 
-        fprintf('num_civ:%d\n',num_c4);
+        fprintf('num_MgII:%d\n',num_c4);
         this_z_1548 = (this_wavelengths / mgii_2796_wavelength) - 1;
         this_z_1550 = (this_wavelengths / mgii_2803_wavelength) - 1;
         if(num_c4>1)
@@ -242,7 +242,7 @@ for quasar_ind = 1:300
             if((p_no_c4(quasar_ind, num_c4-1)>=p_c4(quasar_ind, num_c4-1)) & ...
                 (p_no_c4(quasar_ind, num_c4-1)>=p_c4L1(quasar_ind, num_c4-1)))
 
-                fprintf('No more than %d CIVs in this spectrum.', num_c4-1)
+                fprintf('No more than %d MgIIs in this spectrum.', num_c4-1)
                 break;
             end
 
@@ -254,9 +254,9 @@ for quasar_ind = 1:300
         log_posteriors_no_c4(quasar_ind, num_c4) = ...
             log_priors_no_c4(quasar_ind, num_c4) + log_likelihoods_no_c4(quasar_ind, num_c4);
 
-        fprintf(' ... log p(D | z_QSO, no CIV)     : %0.2f\n', ...
+        fprintf(' ... log p(D | z_QSO, no MgII)     : %0.2f\n', ...
         log_likelihoods_no_c4(quasar_ind, num_c4));
-        fprintf(' ... log p(no CIV | D, z_QSO)     : %0.2f\n', ...
+        fprintf(' ... log p(no MgII | D, z_QSO)     : %0.2f\n', ...
         log_posteriors_no_c4(quasar_ind, num_c4));
         parfor i = 1:num_C4_samples
             % Limitting red-shift in the samples
@@ -334,9 +334,9 @@ for quasar_ind = 1:300
         log_posteriors_c4L2(quasar_ind, num_c4) = ...
             log_priors_c4(quasar_ind, num_c4) + log_likelihoods_c4L2(quasar_ind, num_c4);
 
-        fprintf(' ... log p(D | z_QSO,    CIV)     : %0.2f\n', ...
+        fprintf(' ... log p(D | z_QSO,    MgII)     : %0.2f\n', ...
             log_likelihoods_c4L2(quasar_ind, num_c4));
-        fprintf(' ... log p(CIV | D, z_QSO)        : %0.2f\n', ...
+        fprintf(' ... log p(MgII | D, z_QSO)        : %0.2f\n', ...
             log_posteriors_c4L2(quasar_ind, num_c4));
         [~, maxindL1] = nanmax(sample_log_likelihoods_c4L1(quasar_ind, :));
         map_z_c4L1(quasar_ind, num_c4 )    = sample_z_c4(maxindL1);        
@@ -373,7 +373,7 @@ for quasar_ind = 1:300
         c4_pixel_ind2 = abs(this_wavelengths - (1+map_z_c4L2(quasar_ind, num_c4))*mgii_2803_wavelength)<3;
         num_pixel_civ(quasar_ind, num_c4, 1) = nnz(c4_pixel_ind1);
         num_pixel_civ(quasar_ind, num_c4, 2) = nnz(c4_pixel_ind2);
-        fprintf('CIV pixels:[%d, %d]\n', num_pixel_civ(quasar_ind, num_c4, :)); 
+        fprintf('MgII pixels:[%d, %d]\n', num_pixel_civ(quasar_ind, num_c4, :)); 
 
         % fprintf('s(fine_L1)-%d-%d\n', size(absorptionL1_fine)) 
         % fprintf('s(unmasked)-%d-%d\n', size(this_unmasked_wavelengths))                                    

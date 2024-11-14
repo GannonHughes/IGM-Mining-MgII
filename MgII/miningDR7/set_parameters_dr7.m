@@ -33,8 +33,8 @@ file_loader = @(mjd, plate, fiber_id) ...
 
 
 % % file loading parameters
-loading_min_lambda = 1310;          % range of rest wavelengths to load  Å
-loading_max_lambda = 2850;                    
+loading_min_lambda = 1310; %1310         % range of rest wavelengths to load  Å
+loading_max_lambda = 2850;   %2850             
 % The maximum allowed is set so that even if the peak is redshifted off the end, the
 % quasar still has data in the range
 
@@ -110,10 +110,10 @@ max_z_cut = kms_to_z(vCut);                   % max z_DLA = z_QSO - max_z_cut
 %     (max(wavelengths)/civ_1548_wavelength - 1) - max_z_cut;
 max_z_c4 = @(z_qso, max_z_cut) ...         % determines maximum z_DLA to search
      z_qso - max_z_cut*(1+z_qso);
-% min_z_cut = kms_to_z(vCut);                   % min z_DLA = z_Ly∞ + min_z_cut
+min_z_cut = kms_to_z(vCut);                   % min z_DLA = z_Ly∞ + min_z_cut
 min_z_c4 = @(wavelengths, z_qso) ...         % determines minimum z_DLA to search
     max(min(wavelengths) / mgii_2796_wavelength - 1,                          ...
-        observed_wavelengths(1310, z_qso) / mgii_2796_wavelength - 1);
+        observed_wavelengths(1310, z_qso) / mgii_2796_wavelength - 1); % was 1310
 % min_z_c4 = @(wavelengths, z_qso) ...         % determines minimum z_DLA to search
 %      min(wavelengths) / civ_1548_wavelength - 1;
 train_ratio =0.95;
